@@ -1,4 +1,4 @@
-utils-deep-get
+Deep Get
 ===
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
@@ -17,18 +17,105 @@ For use in the browser, use [browserify](https://github.com/substack/node-browse
 ## Usage
 
 ``` javascript
-var foo = require( 'utils-deep-get' );
+var deepGet = require( 'utils-deep-get' );
 ```
 
-#### foo()
+#### deepGet( obj, path[, options] )
 
-What does this function do?
+Deep get a nested property.
+
+``` javascript
+var obj = { 'a': { 'b': { 'c': 'd' } } };
+
+var val = deepGet( obj, 'a.b.c' );
+// returns 'd'
+```
+
+For `paths` including `arrays`, specify the numeric index.
+
+``` javascript
+var arr = [
+	{ 'a': [ {'x': 5} ] },
+	{ 'a': [ {'x': 10} ] }
+];
+
+var val = deepGet( arr, '1.a.0.x' );
+// returns 10
+```
+
+The key `path` may be specified as either a delimited `string` or a key `array`.
+
+``` javascript
+var obj = { 'a': { 'b': { 'c': 'd' } } };
+
+var val = deepGet( obj, ['a','b','c'] );
+// returns 'd'
+```
+
+The function accepts the following `options`:
+
+*	__sep__: key path separator. Default: `'.'`.
+
+By default, the function assumes `dot` separated key values. To specify an alternative separator, set the `sep` option.
+
+``` javascript
+var obj = { 'a': { 'b': { 'c': 'd' } } };
+
+var val = deepGet( obj, 'a/b/c', {
+	'sep': '/'	
+});
+// returns 'd'
+```
+
+
+#### deepGet.factory( path[, options] )
+
+Creates a reusable deep get factory. The factory method ensures a `deepGet` function is configured identically by using the same set of provided `options`.
+
+``` javascript
+var dget = deepGet.factory( 'a/b/c', {
+	'sep': '/'
+});
+```
+
+
+#### dget( obj )
+
+Deep get a nested property.
+
+``` javascript
+var obj = { 'a': { 'b': { 'c': 'd' } } };
+
+var val = dget( obj );
+// returns 'd'
+```
+
 
 
 ## Examples
 
 ``` javascript
-var foo = require( 'utils-deep-get' );
+var deepGet = require( 'utils-deep-get' );
+
+var data,
+	keys,
+	val,
+	i;
+
+data = new Array( 100 );
+for ( i = 0; i < data.length; i++ ) {
+	data[ i ] = {
+		'x': Date.now(),
+		'y': [ Math.random(), Math.random(), i ]
+	};
+}
+
+keys = [ 0, 'y', 2 ];
+for ( i = 0; i < data.length; i++ ) {
+	keys[ 0 ] = i;
+	val = deepGet( data, keys );
+	console.log( val );
+}
 ```
 
 To run the example code from the top-level application directory,
